@@ -1,25 +1,45 @@
-import logo from './logo.svg';
-import './App.css';
+import './App.css'
+import Header from './components/Header'
+import Meme from './components/Meme'
+import { useState } from 'react'
+import { useEffect } from 'react'
 
-function App() {
+export default function App() {
+  const [allImages, setAllImages] = useState([])
+
+  const [memes, setMemes] = useState({
+    topText: "Então a Terra não é plana?",
+    bottomText: "Nunca foi",
+    memeImage: "https://i.imgflip.com/46e43q.png"
+  })
+
+  useEffect(function() {
+    fetch("https://api.imgflip.com/get_memes")
+      .then(res => res.json())
+      .then(data => setAllImages(data.data.memes))
+  }, [])
+
+  console.log(allImages)
+
+  function randomImage() {
+    const num = Math.floor(Math.random()*100)
+    setMemes(
+      {
+        ...memes,
+        memeImage: allImages[num].url
+      }
+    )
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className='page'>
+      <Header/>
+      <Meme
+        topText={memes.topText}
+        bottomText={memes.bottomText}
+        memeImage={memes.memeImage}
+        randomImage={randomImage}
+      />
     </div>
-  );
+  )
 }
-
-export default App;
